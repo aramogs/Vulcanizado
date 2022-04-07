@@ -15,11 +15,11 @@ btn_logoff.addEventListener("click",()=>{ document.cookie = "accessToken" + '=; 
 
 // SE REDIRIGE A PAGINA 3014 DE TRANSFERENCIAS
 btn_sfe_1.addEventListener("click", ()=>{
-    location.replace("http://10.56.99.201:3014/consultaVUL")
+    location.replace("http://10.56.99.21:3014/consultaVUL")
 })
 btn_sfe_2.addEventListener("click", ()=>{
-    location.replace("http://10.56.99.201:3014/transferVUL")
+    location.replace("http://10.56.99.21:3014/transferVUL")
 })
 btn_cce_1.addEventListener("click", ()=>{
-    location.replace("http://10.56.99.201:3014/conteo_ciclico/VUL")
+    location.replace("http://10.56.99.21:3014/conteo_ciclico/VUL")
 })
