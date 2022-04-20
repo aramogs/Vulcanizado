@@ -28,6 +28,7 @@
     "mysql": "^2.18.1",
     "node-sspi": "^0.2.9",
     "popper.js": "^1.16.1",
+    "redis": "^3.1.2",
     "uuid": "^8.3.2"
   },
   "devDependencies": {

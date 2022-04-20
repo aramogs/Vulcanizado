@@ -86,16 +86,28 @@ middleware.sspi = (req, res, next) => {
 }
 
 
-middleware.macfromip = (req, res, next) => {
+function validMac(mac) {
+    return /^[0-9a-f]{1,2}([.:-])[0-9a-f]{1,2}(?:\1[0-9a-f]{1,2}){4}$/.test(mac)
+}
+
+middleware.macFromIP = (req, res, next) => {
     const regex = /::ffff:/gm;
     let ip = (req.ip).replace(regex, "")
-    if (ip === "::1") {
-        res.locals.macIP = {"mac":"x2:xx:xx:xx:xx:xx", "ip": "10.56.99.21"}; next()
-    }else{
-        macfromip.getMac(ip,(err, mac)=>{
-            if(err){error.log(err)}
-            res.locals.macIP = {"mac":mac, "ip": ip}; next()
-        });   
+    let localIp = (req.hostname).replace(regex, "")
+
+    if (ip === "::1" || ip === localIp) {
+        res.locals.macIP = { "mac": "00-00-00-00-00-00", "ip": "10.56.99.21" }; next()
+    } else {
+        macfromip.getMac(ip, (err, mac) => {
+
+            if (err == "The IP address cannot be self") {/* DO NOTHING*/ }
+
+            if (!validMac(mac)) {
+                res.render('mac_invalida.ejs', { mac })
+            } else {
+                res.locals.macIP = { "mac": mac, "ip": ip }; next()
+            }
+        });
     }
 }
 
