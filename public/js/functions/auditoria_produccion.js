@@ -33,7 +33,7 @@ btnCerrar.forEach(element => {
 
 submitSerial.addEventListener("submit", listAdd)
 
-btn_transferVUL.addEventListener("click", () => { $('#myModal').modal({ backdrop: 'static', keyboard: false }) })
+btn_transferVUL.addEventListener("click", () => { auditoriaProd() })
 
 submitArray_form.addEventListener("submit", verifyBinModal)
 
@@ -43,7 +43,7 @@ btnCerrar_Success.addEventListener("click", cleanInput())
 
 btnCerrar_Error.addEventListener("click", cleanInput())
 
-btn_verificar_cantidad.addEventListener("click", verifyQuantity)
+// btn_verificar_cantidad.addEventListener("click", verifyQuantity)
 
 btnCerrar_Bin.addEventListener("click", () => {
     submitArray.value = "",
@@ -140,30 +140,30 @@ function decreaseValue() {
 }
 
 
-function verifyQuantity() {
-    if (contadorSeriales.value != serialsArray.length) {
-        soundWrong()
-        setTimeout(() => {
-            contadorWarning.classList.remove("animate__flipInX", "animate__animated")
-            contadorWarning.classList.add("animate__flipOutX", "animate__animated")
+// function verifyQuantity() {
+//     if (contadorSeriales.value != serialsArray.length) {
+//         soundWrong()
+//         setTimeout(() => {
+//             contadorWarning.classList.remove("animate__flipInX", "animate__animated")
+//             contadorWarning.classList.add("animate__flipOutX", "animate__animated")
 
-        }, 1000);
+//         }, 1000);
 
-        div_storage_bin.classList.remove("animate__flipInX", "animate__animated")
-        div_storage_bin.classList.add("animate__flipOutX", "animate__animated")
-        contadorWarning.classList.remove("animate__flipOutX", "animate__animated")
-        contadorWarning.classList.add("animate__flipInX", "animate__animated")
-    } else {
-        soundOk()
-        // submitArray.focus()
-        // div_storage_bin.classList.remove("animate__flipOutX", "animate__animated")
-        // div_storage_bin.classList.add("animate__flipInX", "animate__animated")
-        // TODO funcion que manda informacion de seriales a monitor
+//         div_storage_bin.classList.remove("animate__flipInX", "animate__animated")
+//         div_storage_bin.classList.add("animate__flipOutX", "animate__animated")
+//         contadorWarning.classList.remove("animate__flipOutX", "animate__animated")
+//         contadorWarning.classList.add("animate__flipInX", "animate__animated")
+//     } else {
+//         soundOk()
+//         // submitArray.focus()
+//         // div_storage_bin.classList.remove("animate__flipOutX", "animate__animated")
+//         // div_storage_bin.classList.add("animate__flipInX", "animate__animated")
+//         // TODO funcion que manda informacion de seriales a monitor
 
-        auditoriaProd()
+//         auditoriaProd()
 
-    }
-}
+//     }
+// }
 
 function verifyBinModal(e) {
     e.preventDefault()
