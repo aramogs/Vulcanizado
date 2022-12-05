@@ -6,7 +6,8 @@ const jwt = require('jsonwebtoken');
 const redis = require('redis');
 //Require Funciones
 const funcion = require('../public/js/functions/controllerFunctions');
-
+//Require Axios
+const axios = require("axios")
 
 controller.index_GET = (req, res) => {
     user = req.connection.user
@@ -30,7 +31,7 @@ controller.accesoDenegado_GET = (req, res) => {
 
 
 controller.mainMenu_GET = (req, res) => {
-    
+
     let user_id = req.res.locals.authData.id.id
     let user_name = req.res.locals.authData.id.username
     res.render('main_menu.ejs', {
@@ -65,7 +66,7 @@ controller.userAccess_POST = (req, res) => {
 function accessToken(user_id, user_name) {
     return new Promise((resolve, reject) => {
         const id = { id: `${user_id}`, username: `${user_name}` }
-        jwt.sign({ id }, `tristone`, {/*expiresIn: '1h'*/}, (err, token) => {
+        jwt.sign({ id }, `tristone`, {/*expiresIn: '1h'*/ }, (err, token) => {
             resolve(token)
             reject(err)
         })
@@ -99,24 +100,28 @@ controller.auditoriaProduccion_GET = (req, res) => {
     });
 }
 
-controller.auditoriaExt_POST = (req, res) => {
+controller.auditoriaVUL_POST = (req, res) => {
     let estacion = req.res.locals.macIP.mac
     let serial = req.body.serial
     let proceso = req.body.proceso
     let user_id = req.res.locals.authData.id.id
 
-
-
     let send = `{
             "station":"${estacion}",
-            "serial_num":"${serial}",
+            "serial":"${serial}",
             "process":"${proceso}", 
             "user_id":"${user_id}"
         }`
-
-    amqpRequest(send, "rpc_vul")
-        .then((result) => { res.json(result) })
-        .catch((err) => { res.json(err) })
+    axios({
+        method: 'post',
+        url: `http://${process.env.API_ADDRESS}:3014/auditoriaVUL`,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: send
+    })
+        .then(result => { res.send(result.data) })
+        .catch(err => { res.json(JSON.stringify(err)) })
 }
 
 
@@ -124,13 +129,137 @@ controller.verify_hashRedis_POST = (req, res) => {
 
     let estacion_hash = (req.body.estacion).replace(/:/g, "-")
     async function getStatus() {
-        const redis_client = redis.createClient({host: `${process.env.DB_REDIS_SERVER}`});
-        redis_client.on('error',err=>(console.log("error",err)))
-        redis_client.get(estacion_hash, function(err, reply) { res.json(reply)});
+        const redis_client = redis.createClient({ host: `${process.env.DB_REDIS_SERVER}` });
+        redis_client.on('error', err => (console.error("error", err)))
+        redis_client.get(estacion_hash, function (err, reply) { res.json(reply) });
         redis_client.quit()
-        
+
     }
     getStatus()
+}
+
+controller.consultaVUL_GET = (req, res) => {
+    let user_id = req.res.locals.authData.id.id
+    let user_name = req.res.locals.authData.id.username
+    let api_address = process.env.API_ADDRESS
+    res.render('consulta_vul.ejs', {
+        user_id,
+        user_name
+    })
+}
+
+controller.getUbicacionesVULMaterial_POST = (req, res) => {
+    let estacion = (req.res.locals.macIP.mac).replace(/:/g, "-")
+    let material = req.body.material
+    let proceso = req.body.proceso
+    let user_id = req.res.locals.authData.id.id
+    let send = `{
+        "estacion":"${estacion}",
+        "material": "${material}",
+        "process":"${proceso}", 
+        "user_id":"${user_id}"
+    }`
+    axios({
+        method: 'post',
+        url: `http://${process.env.API_ADDRESS}:3014/getUbicacionesVULMaterial`,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: send
+    })
+        .then(result => { res.send(result.data) })
+        .catch(err => { res.json(JSON.stringify(err)) })
+}
+
+controller.getUbicacionesVULMandrel_POST = (req, res) => {
+    let estacion = (req.res.locals.macIP.mac).replace(/:/g, "-")
+    let mandrel = req.body.mandrel
+    let proceso = req.body.proceso
+    let user_id = req.res.locals.authData.id.id
+    let material = ""
+    let send = `{
+        "estacion":"${estacion}",
+        "mandrel": "${mandrel}",
+        "process":"${proceso}", 
+        "user_id":"${user_id}"
+    }`
+    axios({
+        method: 'post',
+        url: `http://${process.env.API_ADDRESS}:3014/getUbicacionesVULMandrel`,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: send
+    })
+        .then(result => { res.send(result.data) })
+        .catch(err => { res.json(JSON.stringify(err)) })
+}
+
+controller.getUbicacionesVULSerial_POST = (req, res) => {
+    let estacion = (req.res.locals.macIP.mac).replace(/:/g, "-")
+    let serial = req.body.serial
+    let proceso = req.body.proceso
+    let user_id = req.res.locals.authData.id.id
+    let material = ""
+    let send = `{
+        "estacion":"${estacion}",
+        "serial": "${serial}",
+        "process":"${proceso}", 
+        "user_id":"${user_id}"
+    }`
+    axios({
+        method: 'post',
+        url: `http://${process.env.API_ADDRESS}:3014/getUbicacionesVULSerial`,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: send
+    })
+        .then(result => { res.send(result.data) })
+        .catch(err => { res.json(JSON.stringify(err)) })
+}
+
+
+controller.transferVUL_GET = (req, res) => {
+    let estacion = req.res.locals.macIP.mac
+    let user_id = req.res.locals.authData.id.id
+    let user_name = req.res.locals.authData.id.username
+    res.render('transfer_vul.ejs', {
+        user_id,
+        user_name,
+        estacion
+    })
+}
+
+controller.transferVUL_Confirmed = (req, res) => {
+    let estacion = req.res.locals.macIP.mac
+    let serial = req.body.serial
+    let proceso = req.body.proceso
+    let storage_bin = req.body.storage_bin
+    let user_id = req.res.locals.authData.id.id
+
+    let send = `{
+            "station":"${estacion}",
+            "serial":"${serial}",
+            "process":"${proceso}", 
+            "storage_bin": "${storage_bin}", 
+            "user_id":"${user_id}"
+        }`
+
+    // amqpRequest(send, "rpc_vul")
+    //     .then((result) => { res.json(result) })
+    //     .catch((err) => { res.json(err) })
+
+    axios({
+        method: 'post',
+        url: `http://${process.env.API_ADDRESS}:3014/transferVUL_Confirmed`,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: send
+    })
+        .then(result => { res.json(result.data) })
+        .catch(err => { res.json(err) })
 }
 
 function amqpRequest(send, queue) {

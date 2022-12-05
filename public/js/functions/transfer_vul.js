@@ -33,17 +33,17 @@ btnCerrar.forEach(element => {
 
 submitSerial.addEventListener("submit", listAdd)
 
-btn_transferVUL.addEventListener("click", () => { auditoriaProd() })
+btn_transferVUL.addEventListener("click", () => { $('#myModal').modal({ backdrop: 'static', keyboard: false }) })
 
 submitArray_form.addEventListener("submit", verifyBinModal)
 
-// submitArray_Bin.addEventListener("submit", verifyBin)
+submitArray_Bin.addEventListener("submit", verifyBin)
 
-btnCerrar_Success.addEventListener("click", cleanInput())
+btnCerrar_Success.addEventListener("click", () => { cleanInput() })
 
 btnCerrar_Error.addEventListener("click", cleanInput())
 
-// btn_verificar_cantidad.addEventListener("click", verifyQuantity)
+btn_verificar_cantidad.addEventListener("click", verifyQuantity)
 
 btnCerrar_Bin.addEventListener("click", () => {
     submitArray.value = "",
@@ -62,11 +62,6 @@ function cleanInput() {
     contadorSeriales.value = 0
     div_storage_bin.classList.remove("animate__flipInX", "animate__animated")
     div_storage_bin.classList.add("animate__flipOutX", "animate__animated")
-    btn_transferVUL.disabled = true
-    btn_transferVUL.classList.remove("btn-warning")
-    btn_transferVUL.classList.add("btn-secondary")
-
-
 }
 
 
@@ -140,30 +135,26 @@ function decreaseValue() {
 }
 
 
-// function verifyQuantity() {
-//     if (contadorSeriales.value != serialsArray.length) {
-//         soundWrong()
-//         setTimeout(() => {
-//             contadorWarning.classList.remove("animate__flipInX", "animate__animated")
-//             contadorWarning.classList.add("animate__flipOutX", "animate__animated")
+function verifyQuantity() {
+    if (contadorSeriales.value != serialsArray.length) {
+        soundWrong()
+        setTimeout(() => {
+            contadorWarning.classList.remove("animate__flipInX", "animate__animated")
+            contadorWarning.classList.add("animate__flipOutX", "animate__animated")
 
-//         }, 1000);
+        }, 1000);
 
-//         div_storage_bin.classList.remove("animate__flipInX", "animate__animated")
-//         div_storage_bin.classList.add("animate__flipOutX", "animate__animated")
-//         contadorWarning.classList.remove("animate__flipOutX", "animate__animated")
-//         contadorWarning.classList.add("animate__flipInX", "animate__animated")
-//     } else {
-//         soundOk()
-//         // submitArray.focus()
-//         // div_storage_bin.classList.remove("animate__flipOutX", "animate__animated")
-//         // div_storage_bin.classList.add("animate__flipInX", "animate__animated")
-//         // TODO funcion que manda informacion de seriales a monitor
-
-//         auditoriaProd()
-
-//     }
-// }
+        div_storage_bin.classList.remove("animate__flipInX", "animate__animated")
+        div_storage_bin.classList.add("animate__flipOutX", "animate__animated")
+        contadorWarning.classList.remove("animate__flipOutX", "animate__animated")
+        contadorWarning.classList.add("animate__flipInX", "animate__animated")
+    } else {
+        soundOk()
+        submitArray.focus()
+        div_storage_bin.classList.remove("animate__flipOutX", "animate__animated")
+        div_storage_bin.classList.add("animate__flipInX", "animate__animated")
+    }
+}
 
 function verifyBinModal(e) {
     e.preventDefault()
@@ -177,18 +168,18 @@ function verifyBinModal(e) {
 
 
 }
-// function verifyBin(e) {
-//     e.preventDefault()
+function verifyBin(e) {
+    e.preventDefault()
 
-//     if (submitArray.value == verifySBin.value) {
-//         transferVUL()
-//     } else {
-//         setTimeout(() => {
-//             verifySBin.value = ""
-//         }, 100);
-//         soundWrong()
-//     }
-// }
+    if (submitArray.value == verifySBin.value) {
+        transferVUL()
+    } else {
+        setTimeout(() => {
+            verifySBin.value = ""
+        }, 100);
+        soundWrong()
+    }
+}
 
 function verify_hashRedis(serialsArray_) {
     let data = { "estacion": `${estacion}` };
@@ -216,155 +207,152 @@ function verify_hashRedis(serialsArray_) {
 }
 
 
-function auditoriaProd(e) {
+function transferVUL(e) {
     // e.preventDefault()
     $('#modalStorage').modal('hide')
     setTimeout(() => {
         soundOk()
     }, 150);
     soundOk()
-
+    let storage_bin = submitArray.value
     $('#myModal').modal('hide')
     // $('#modalSpinner').modal({ backdrop: 'static', keyboard: false })
     $('#modalCountDown').modal({ backdrop: 'static', keyboard: false })
 
-    let data = { "proceso": "audit_ext", "user_id": user_id.innerHTML, "serial": `${serialsArray}` };
-    // let interval = setInterval(()=>verify_hashRedis(serialsArray), 800);
+    let data = { "estacion": ``, "proceso": "transfer_vul_confirmed", "user_id": user_id.innerHTML, "serial": `${serialsArray}`, "storage_bin": `${storage_bin}` };
+    let interval = setInterval(() => verify_hashRedis(serialsArray), 800);
     axios({
         method: 'post',
-        url: "/auditoriaVUL",
+        url: "/transferVUL_Confirmed",
         headers: {
             'Content-Type': 'application/json'
         },
         data: JSON.stringify(data)
     })
-        .then((result) => {
-            console.log(result);
-            let response = result.data
-            let errors = 0
-            soundOk()
-            errorText.hidden = true
-            tabla_consulta_container.hidden = false
+    .then((result) => {
+        console.log(result);
+        let response = result.data
+        let errors = 0
+        soundOk()
+        errorText.hidden = true
+        tabla_consulta_container.hidden = false
 
-            tabla_consulta.innerHTML = ""
-            response.forEach(element => {
-                let newRow = tabla_consulta.insertRow(tabla_consulta.rows.length);
-                if (element.name) {
-                    console.log(element);
-                    let row = `
+        tabla_consulta.innerHTML = ""
+        response.forEach(element => {
+            let newRow = tabla_consulta.insertRow(tabla_consulta.rows.length);
+            if (element.name) {
+                console.log(element);
+                let row = `
                     <tr class="bg-danger">
                         <td>${element.abapMsgV1}</td>
                         <td>${element.key ? element.key : element.message}</td>
                     </tr>
                     `
-                    newRow.classList.add("bg-danger", "text-white")
-                    errors++
-                    return newRow.innerHTML = row;
-                } else {
-                    let row = `
+                newRow.classList.add("bg-danger", "text-white")
+                errors++
+                return newRow.innerHTML = row;
+            } else {
+                let row = `
                     <tr >
                         <td>${(element.I_LENUM).replace(/^0+/gm, "")}</td>
                         <td>${element.E_TANUM}</td>
                     </tr>
                     `
-                    return newRow.innerHTML = row;
-                }
-            })
-            cantidadErrores.innerHTML = errors
 
-            setTimeout(function () {
-                $('#modalCountDown').modal('hide')
-                $('#modalError').modal({ backdrop: 'static', keyboard: false })
-            }, 500);
+                return newRow.innerHTML = row;
+            }
+
 
         })
-        .catch(err => {
+        cantidadErrores.innerHTML = errors
 
-            setTimeout(function () {
-                cantidadErrores.innerHTML = err
-                $('#modalCountDown').modal('hide')
-                $('#modalError').modal({ backdrop: 'static', keyboard: false })
-            }, 500);
-        })
-    // .then((result) => {
+        setTimeout(function () {
+            $('#modalCountDown').modal('hide')
+            $('#modalError').modal({ backdrop: 'static', keyboard: false })
+        }, 500);
 
-    //     if ((result.data).includes("<!DOCTYPE html>")) {
+    })
+    .catch(err => {
 
-    //         setTimeout(() => {
-    //             location.href = "/login"
-    //         }, 1000);
-    //         soundWrong()
-    //     }
+        setTimeout(function () {
+            cantidadErrores.innerHTML = err
+            $('#modalCountDown').modal('hide')
+            $('#modalError').modal({ backdrop: 'static', keyboard: false })
+        }, 500);
+    })
+        // .then((result) => {
 
-    //     response = JSON.parse(result.data)
+        //     console.log(result);
 
-    //     console.log(response);
-
-    //     if (response.error !== "N/A") {
-
-    //         errorTextField.innerHTML = response.error
-    //         errorText.hidden = false
-    //         tabla_consulta_container.hidden = true
-    //         serialsArray = []
-    //         currentST.innerHTML = ""
-    //         btn_transferVUL.disabled = true
-    //         clearInterval(interval);
-    //         setTimeout(() => { soundWrong(), $('#modalCountDown').modal('hide') }, 500);
-    //         $('#modalError').modal({ backdrop: 'static', keyboard: false })
-
-    //     } else {
-    //         soundOk()
-    //         errorText.hidden = true
-    //         tabla_consulta_container.hidden = false
-    //         let result = response.result
-    //         let result_mod = ""
-
-    //         result_mod = result.replace("[", "").replace("]", "").replace(/'/g, '"')
-    //         let objectStringArray = (new Function("return [" + result_mod + "];")());
-    //         let errors = 0
-
-    //         objectStringArray.forEach(element => {
-    //             if (element.error != "N/A") {
-    //                 errors++
-    //             }
-    //         });
-
-    //         if (errors != 0) {
-    //             tabla_consulta.innerHTML = ""
-    //             objectStringArray.forEach(element => {
-    //                 let newRow = tabla_consulta.insertRow(tabla_consulta.rows.length);
-    //                 if (element.error != "N/A") {
-    //                     let row = `
-    //                         <tr>
-    //                             <td>${element.serial}</td>
-    //                             <td>${element.error}</td>
-    //                         </tr>
-    //                         `
-    //                     newRow.classList.add("bg-danger", "text-white")
-    //                     return newRow.innerHTML = row;
-    //                 }
+        //     response = JSON.parse(result.data)
 
 
-    //             })
-    //             cantidadErrores.innerHTML = errors
-    //             // $('#modalSpinner').modal('hide')
-    //             // $('#modalError').modal({ backdrop: 'static', keyboard: false })
-    //             setTimeout(function () {
-    //                 clearInterval(interval);
-    //                 $('#modalCountDown').modal('hide')
-    //                 $('#modalError').modal({ backdrop: 'static', keyboard: false })
-    //             }, 500);
-    //         } else {
-    //             // $('#modalSpinner').modal('hide')
-    //             // $('#modalSuccess').modal({ backdrop: 'static', keyboard: false })
-    //             clearInterval(interval);
-    //             $('#modalCountDown').modal('hide')
-    //             $('#modalSuccess').modal({ backdrop: 'static', keyboard: false })
-    //         }
-    //     }
-    // })
-    // .catch((err) => {
-    //     console.error(err);
-    // })
+
+        //     if (response.error !== "N/A") {
+
+        //         errorTextField.innerHTML = response.error
+        //         errorText.hidden = false
+        //         tabla_consulta_container.hidden = true
+        //         serialsArray = []
+        //         currentST.innerHTML = ""
+        //         btn_transferVUL.disabled = true
+        //         clearInterval(interval);
+        //         setTimeout(() => { soundWrong(), $('#modalCountDown').modal('hide') }, 500);
+        //         $('#modalError').modal({ backdrop: 'static', keyboard: false })
+
+        //     } else {
+        //         soundOk()
+        //         errorText.hidden = true
+        //         tabla_consulta_container.hidden = false
+        //         let result = response.result
+        //         let result_mod = ""
+
+        //         result_mod = result.replace("[", "").replace("]", "").replace(/'/g, '"')
+        //         let objectStringArray = (new Function("return [" + result_mod + "];")());
+        //         let errors = 0
+
+        //         objectStringArray.forEach(element => {
+        //             if (typeof (element.result) != "number") {
+        //                 errors++
+        //             }
+        //         });
+
+        //         if (errors != 0) {
+        //             tabla_consulta.innerHTML = ""
+        //             objectStringArray.forEach(element => {
+        //                 let newRow = tabla_consulta.insertRow(tabla_consulta.rows.length);
+        //                 if (typeof (element.result) != "number") {
+        //                     let row = `
+        //                         <tr class="bg-danger">
+        //                             <td>${element.serial_num}</td>
+        //                             <td>${element.result}</td>
+        //                         </tr>
+        //                         `
+        //                     newRow.classList.add("bg-danger", "text-white")
+        //                     return newRow.innerHTML = row;
+        //                 }
+
+
+        //             })
+        //             cantidadErrores.innerHTML = errors
+        //             // $('#modalSpinner').modal('hide')
+        //             // $('#modalError').modal({ backdrop: 'static', keyboard: false })
+        //             setTimeout(function () {
+        //                 clearInterval(interval);
+        //                 $('#modalCountDown').modal('hide')
+        //                 $('#modalError').modal({ backdrop: 'static', keyboard: false })
+        //             }, 500);
+        //         } else {
+        //             // $('#modalSpinner').modal('hide')
+        //             // $('#modalSuccess').modal({ backdrop: 'static', keyboard: false })
+        //             clearInterval(interval);
+        //             $('#modalCountDown').modal('hide')
+        //             $('#modalSuccess').modal({ backdrop: 'static', keyboard: false })
+        //         }
+        //     }
+        // })
+        // .catch((err) => {
+        //     console.error(err);
+        // })
 }
 

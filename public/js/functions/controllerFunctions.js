@@ -1,7 +1,7 @@
 const funcion = {};
 
 const dbE = require('../../db/conn_empleados');
-
+const dbBartender = require('../../db/conn_b10_bartender');
 
 funcion.getUsers = (user) => {
     return new Promise((resolve, reject) => {
