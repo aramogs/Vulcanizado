@@ -230,7 +230,15 @@ function transferVUL(e) {
         data: JSON.stringify(data)
     })
     .then((result) => {
-        console.log(result);
+        
+        if ((result.data).includes("<!DOCTYPE html>")) {
+            soundWrong()
+            setTimeout(() => {
+                location.href = "/login/Acreditacion"
+            }, 500);
+            
+        }
+        
         let response = result.data
         let errors = 0
         soundOk()
