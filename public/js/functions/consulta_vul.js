@@ -224,8 +224,15 @@ function process_input(e) {
             })
             .then((result) => {
 
+                if ((result.data).includes("<!DOCTYPE html>")) {
+                    soundWrong()
+                    setTimeout(() => {
+                        location.href = "/login/Acreditacion"
+                    }, 500);
+                    
+                }
+
                 let response = result.data
-                console.log(result);
                 if (result.data.key) {
                     soundWrong()
                     errorText.innerHTML = result.data.key ? result.data.key : result.data.message
