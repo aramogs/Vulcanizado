@@ -262,6 +262,88 @@ controller.transferVUL_Confirmed = (req, res) => {
         .catch(err => { res.json(err) })
 }
 
+controller.conteoC_GET = (req, res) => {
+    let estacion = req.res.locals.macIP.mac
+    let storage_type = req.params.storage_type
+    let user_id = req.res.locals.authData.id.id
+    let user_name = req.res.locals.authData.id.username
+    res.render('conteoC.ejs', {
+        user_id,
+        user_name,
+        storage_type,
+        estacion
+    })
+}
+
+controller.getBinStatusReport_POST = (req, res) => {
+    let estacion = req.res.locals.macIP.mac
+
+    let proceso = req.body.proceso
+    let storage_bin = req.body.storage_bin
+    let user_id = req.res.locals.authData.id.id
+    let storage_type = req.body.storage_type
+
+    let send = `{
+        "estacion":"${estacion}",
+        "process":"${proceso}",  
+        "storage_bin": "${storage_bin}", 
+        "user_id":"${user_id}",
+        "storage_type":"${storage_type}" 
+    }`
+
+    axios({
+        method: 'post',
+        url: `http://${process.env.API_ADDRESS}:3014/getBinStatusReportVUL`,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: send
+    })
+        .then(result => { res.send(result.data) })
+        .catch(err => { res.json(JSON.stringify(err))})
+
+    // amqpRequest(send, "rpc_cycle")
+    //     .then((result) => { res.json(result) })
+    //     .catch((err) => { res.json(err) })
+}
+
+controller.postCycleSU_POST = (req, res) => {
+    console.log(req.body);
+    let estacion = req.res.locals.macIP.mac
+
+    let storage_bin = req.body.storage_bin
+    let user_id = req.body.user_id
+    let storage_type = req.body.storage_type
+    let listed_storage_units = req.body.listed_storage_units
+    let unlisted_storage_units = req.body.unlisted_storage_units
+    let not_found_storage_units = req.body.not_found_storage_units
+
+    let send = `{
+        "estacion":"${estacion}", 
+        "storage_bin": "${storage_bin}", 
+        "user_id":"${user_id}",
+        "storage_type":"${storage_type}",
+        "listed_storage_units":"${listed_storage_units}",
+        "unlisted_storage_units":"${unlisted_storage_units}",
+        "not_found_storage_units":"${not_found_storage_units}" 
+    }`
+
+    axios({
+        method: 'post',
+        url: `http://${process.env.API_ADDRESS}:3014/postCycleSUVUL`,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: send
+    })
+        .then(result => { res.send(result.data) })
+        .catch(err => { res.json(JSON.stringify(err))})
+
+    // amqpRequest(send, "rpc_cycle")
+    //     .then((result) => { res.json(result) })
+    //     .catch((err) => { res.json(err) })
+}
+
 function amqpRequest(send, queue) {
     return new Promise((resolve, reject) => {
         var args = process.argv.slice(2);

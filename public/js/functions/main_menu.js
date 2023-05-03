@@ -18,7 +18,7 @@ btn_sfe_2.addEventListener("click", ()=>{
     location.replace("/transferVUL")
 })
 btn_cce_1.addEventListener("click", ()=>{
-    location.replace("http://10.56.99.21:3014/conteo_ciclico/VUL")
+    location.replace("/conteo_ciclico/VUL")
 })
 btn_aud_1.addEventListener("click", ()=>{
     location.replace("/auditoriaProduccionVUL")

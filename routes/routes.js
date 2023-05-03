@@ -24,4 +24,7 @@ router.get('/transferVUL',middleware.verifyToken, middleware.macFromIP, routesCo
 router.post('/transferVUL_Confirmed',middleware.verifyToken, middleware.macFromIP, routesController.transferVUL_Confirmed);
 router.get('/auditoriaProduccionVUL', middleware.verifyToken, middleware.macFromIP, routesController.auditoriaProduccion_GET);
 router.post('/auditoriaVUL',middleware.verifyToken, middleware.macFromIP, routesController.auditoriaVUL_POST);
+router.get('/conteo_ciclico/:storage_type',middleware.verifyToken, middleware.macFromIP, routesController.conteoC_GET);
+router.post("/getBinStatusReport",middleware.verifyToken, middleware.macFromIP, routesController.getBinStatusReport_POST);
+router.post("/postCycleSU",middleware.verifyToken, middleware.macFromIP, routesController.postCycleSU_POST);
 module.exports = router;
