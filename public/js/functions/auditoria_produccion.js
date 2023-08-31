@@ -239,7 +239,6 @@ function auditoriaProd(e) {
         data: JSON.stringify(data)
     })
         .then((result) => {
-            console.log(result);
             let response = result.data
             let errors = 0
             soundOk()
@@ -249,12 +248,11 @@ function auditoriaProd(e) {
             tabla_consulta.innerHTML = ""
             response.forEach(element => {
                 let newRow = tabla_consulta.insertRow(tabla_consulta.rows.length);
-                if (element.name) {
-                    console.log(element);
+                if (element.key) {
                     let row = `
                     <tr class="bg-danger">
                         <td>${element.abapMsgV1}</td>
-                        <td>${element.key ? element.key : element.message}</td>
+                        <td>${element.key ? element.key : element.abapMsgV1}</td>
                     </tr>
                     `
                     newRow.classList.add("bg-danger", "text-white")
