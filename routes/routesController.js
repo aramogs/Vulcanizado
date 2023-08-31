@@ -308,7 +308,6 @@ controller.getBinStatusReport_POST = (req, res) => {
 }
 
 controller.postCycleSU_POST = (req, res) => {
-    console.log(req.body);
     let estacion = req.res.locals.macIP.mac
 
     let storage_bin = req.body.storage_bin

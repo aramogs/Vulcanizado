@@ -220,7 +220,7 @@ function transferVUL(e) {
     $('#modalCountDown').modal({ backdrop: 'static', keyboard: false })
 
     let data = { "estacion": ``, "proceso": "transfer_vul_confirmed", "user_id": user_id.innerHTML, "serial": `${serialsArray}`, "storage_bin": `${storage_bin}` };
-    let interval = setInterval(() => verify_hashRedis(serialsArray), 800);
+    // let interval = setInterval(() => verify_hashRedis(serialsArray), 800);
     axios({
         method: 'post',
         url: "/transferVUL_Confirmed",
@@ -248,8 +248,7 @@ function transferVUL(e) {
         tabla_consulta.innerHTML = ""
         response.forEach(element => {
             let newRow = tabla_consulta.insertRow(tabla_consulta.rows.length);
-            if (element.name) {
-                console.log(element);
+            if (element.key) {
                 let row = `
                     <tr class="bg-danger">
                         <td>${element.abapMsgV1}</td>
