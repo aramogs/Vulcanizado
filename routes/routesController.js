@@ -114,7 +114,7 @@ controller.auditoriaVUL_POST = (req, res) => {
         }`
     axios({
         method: 'post',
-        url: `http://${process.env.API_ADDRESS}:3014/auditoriaVUL`,
+        url: `http://${process.env.API_ADDRESS}:5000/auditoriaVUL`,
         headers: {
             'Content-Type': 'application/json'
         },
@@ -161,7 +161,7 @@ controller.getUbicacionesVULMaterial_POST = (req, res) => {
     }`
     axios({
         method: 'post',
-        url: `http://${process.env.API_ADDRESS}:3014/getUbicacionesVULMaterial`,
+        url: `http://${process.env.API_ADDRESS}:5000/getUbicacionesVULMaterial`,
         headers: {
             'Content-Type': 'application/json'
         },
@@ -185,7 +185,7 @@ controller.getUbicacionesVULMandrel_POST = (req, res) => {
     }`
     axios({
         method: 'post',
-        url: `http://${process.env.API_ADDRESS}:3014/getUbicacionesVULMandrel`,
+        url: `http://${process.env.API_ADDRESS}:5000/getUbicacionesVULMandrel`,
         headers: {
             'Content-Type': 'application/json'
         },
@@ -209,7 +209,7 @@ controller.getUbicacionesVULSerial_POST = (req, res) => {
     }`
     axios({
         method: 'post',
-        url: `http://${process.env.API_ADDRESS}:3014/getUbicacionesVULSerial`,
+        url: `http://${process.env.API_ADDRESS}:5000/getUbicacionesVULSerial`,
         headers: {
             'Content-Type': 'application/json'
         },
@@ -252,7 +252,7 @@ controller.transferVUL_Confirmed = (req, res) => {
 
     axios({
         method: 'post',
-        url: `http://${process.env.API_ADDRESS}:3014/transferVUL_Confirmed`,
+        url: `http://${process.env.API_ADDRESS}:5000/transferVUL_Confirmed`,
         headers: {
             'Content-Type': 'application/json'
         },
@@ -293,7 +293,7 @@ controller.getBinStatusReport_POST = (req, res) => {
 
     axios({
         method: 'post',
-        url: `http://${process.env.API_ADDRESS}:3014/getBinStatusReportVUL`,
+        url: `http://${process.env.API_ADDRESS}:5000/getBinStatusReportVUL`,
         headers: {
             'Content-Type': 'application/json'
         },
@@ -329,7 +329,7 @@ controller.postCycleSU_POST = (req, res) => {
 
     axios({
         method: 'post',
-        url: `http://${process.env.API_ADDRESS}:3014/postCycleSUVUL`,
+        url: `http://${process.env.API_ADDRESS}:5000/postCycleSUVUL`,
         headers: {
             'Content-Type': 'application/json'
         },
