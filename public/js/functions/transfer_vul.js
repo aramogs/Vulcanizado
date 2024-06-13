@@ -229,137 +229,71 @@ function transferVUL(e) {
         },
         data: JSON.stringify(data)
     })
-    .then((result) => {
-        
-        if ((result.data).includes("<!DOCTYPE html>")) {
-            soundWrong()
-            setTimeout(() => {
-                location.href = "/login/Acreditacion"
-            }, 500);
-            
-        }
-        
-        let response = result.data
-        let errors = 0
-        soundOk()
-        errorText.hidden = true
-        tabla_consulta_container.hidden = false
+        .then((result) => {
 
-        tabla_consulta.innerHTML = ""
-        response.forEach(element => {
-            let newRow = tabla_consulta.insertRow(tabla_consulta.rows.length);
-            if (element.key) {
-                let row = `
+            // if ((result.data).includes("<!DOCTYPE html>")) {
+            //     soundWrong()
+            //     setTimeout(() => {
+            //         location.href = "/login/Acreditacion"
+            //     }, 500);
+
+            // }
+
+            let response = result.data
+            let errors = 0
+            soundOk()
+            errorText.hidden = true
+            tabla_consulta_container.hidden = false
+
+            if (result.data.key) {
+                soundWrong()
+                errorText.innerHTML = result.data.key ? result.data.key : result.data.message
+                setTimeout(() => { $('#modalSpinner').modal('hide') }, 500);
+                $('#modalError').modal({ backdrop: 'static', keyboard: false })
+            } else {
+
+                tabla_consulta.innerHTML = ""
+                response.forEach(element => {
+                    let newRow = tabla_consulta.insertRow(tabla_consulta.rows.length);
+                    if (element.key) {
+                        let row = `
                     <tr class="bg-danger">
                         <td>${element.abapMsgV1}</td>
                         <td>${element.key ? element.key : element.message}</td>
                     </tr>
                     `
-                newRow.classList.add("bg-danger", "text-white")
-                errors++
-                return newRow.innerHTML = row;
-            } else {
-                let row = `
+                        newRow.classList.add("bg-danger", "text-white")
+                        errors++
+                        return newRow.innerHTML = row;
+                    } else {
+                        let row = `
                     <tr >
                         <td>${(element.I_LENUM).replace(/^0+/gm, "")}</td>
                         <td>${element.E_TANUM}</td>
                     </tr>
                     `
 
-                return newRow.innerHTML = row;
+                        return newRow.innerHTML = row;
+                    }
+
+
+                })
+                cantidadErrores.innerHTML = errors
+
+                setTimeout(function () {
+                    $('#modalCountDown').modal('hide')
+                    $('#modalError').modal({ backdrop: 'static', keyboard: false })
+                }, 500);
             }
 
-
         })
-        cantidadErrores.innerHTML = errors
+        .catch(err => {
 
-        setTimeout(function () {
-            $('#modalCountDown').modal('hide')
-            $('#modalError').modal({ backdrop: 'static', keyboard: false })
-        }, 500);
-
-    })
-    .catch(err => {
-
-        setTimeout(function () {
-            cantidadErrores.innerHTML = err
-            $('#modalCountDown').modal('hide')
-            $('#modalError').modal({ backdrop: 'static', keyboard: false })
-        }, 500);
-    })
-        // .then((result) => {
-
-        //     console.log(result);
-
-        //     response = JSON.parse(result.data)
-
-
-
-        //     if (response.error !== "N/A") {
-
-        //         errorTextField.innerHTML = response.error
-        //         errorText.hidden = false
-        //         tabla_consulta_container.hidden = true
-        //         serialsArray = []
-        //         currentST.innerHTML = ""
-        //         btn_transferVUL.disabled = true
-        //         clearInterval(interval);
-        //         setTimeout(() => { soundWrong(), $('#modalCountDown').modal('hide') }, 500);
-        //         $('#modalError').modal({ backdrop: 'static', keyboard: false })
-
-        //     } else {
-        //         soundOk()
-        //         errorText.hidden = true
-        //         tabla_consulta_container.hidden = false
-        //         let result = response.result
-        //         let result_mod = ""
-
-        //         result_mod = result.replace("[", "").replace("]", "").replace(/'/g, '"')
-        //         let objectStringArray = (new Function("return [" + result_mod + "];")());
-        //         let errors = 0
-
-        //         objectStringArray.forEach(element => {
-        //             if (typeof (element.result) != "number") {
-        //                 errors++
-        //             }
-        //         });
-
-        //         if (errors != 0) {
-        //             tabla_consulta.innerHTML = ""
-        //             objectStringArray.forEach(element => {
-        //                 let newRow = tabla_consulta.insertRow(tabla_consulta.rows.length);
-        //                 if (typeof (element.result) != "number") {
-        //                     let row = `
-        //                         <tr class="bg-danger">
-        //                             <td>${element.serial_num}</td>
-        //                             <td>${element.result}</td>
-        //                         </tr>
-        //                         `
-        //                     newRow.classList.add("bg-danger", "text-white")
-        //                     return newRow.innerHTML = row;
-        //                 }
-
-
-        //             })
-        //             cantidadErrores.innerHTML = errors
-        //             // $('#modalSpinner').modal('hide')
-        //             // $('#modalError').modal({ backdrop: 'static', keyboard: false })
-        //             setTimeout(function () {
-        //                 clearInterval(interval);
-        //                 $('#modalCountDown').modal('hide')
-        //                 $('#modalError').modal({ backdrop: 'static', keyboard: false })
-        //             }, 500);
-        //         } else {
-        //             // $('#modalSpinner').modal('hide')
-        //             // $('#modalSuccess').modal({ backdrop: 'static', keyboard: false })
-        //             clearInterval(interval);
-        //             $('#modalCountDown').modal('hide')
-        //             $('#modalSuccess').modal({ backdrop: 'static', keyboard: false })
-        //         }
-        //     }
-        // })
-        // .catch((err) => {
-        //     console.error(err);
-        // })
+            setTimeout(function () {
+                cantidadErrores.innerHTML = err
+                $('#modalCountDown').modal('hide')
+                $('#modalError').modal({ backdrop: 'static', keyboard: false })
+            }, 500);
+        })
 }
 
