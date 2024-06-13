@@ -229,71 +229,64 @@ function transferVUL(e) {
         },
         data: JSON.stringify(data)
     })
-        .then((result) => {
+    .then((result) => {
+        
+        if ((result.data).includes("<!DOCTYPE html>")) {
+            soundWrong()
+            setTimeout(() => {
+                location.href = "/login/Acreditacion"
+            }, 500);
+            
+        }
+        
+        let response = result.data
+        let errors = 0
+        soundOk()
+        errorText.hidden = true
+        tabla_consulta_container.hidden = false
 
-            // if ((result.data).includes("<!DOCTYPE html>")) {
-            //     soundWrong()
-            //     setTimeout(() => {
-            //         location.href = "/login/Acreditacion"
-            //     }, 500);
-
-            // }
-
-            let response = result.data
-            let errors = 0
-            soundOk()
-            errorText.hidden = true
-            tabla_consulta_container.hidden = false
-
-            if (result.data.key) {
-                soundWrong()
-                errorText.innerHTML = result.data.key ? result.data.key : result.data.message
-                setTimeout(() => { $('#modalSpinner').modal('hide') }, 500);
-                $('#modalError').modal({ backdrop: 'static', keyboard: false })
-            } else {
-
-                tabla_consulta.innerHTML = ""
-                response.forEach(element => {
-                    let newRow = tabla_consulta.insertRow(tabla_consulta.rows.length);
-                    if (element.key) {
-                        let row = `
+        tabla_consulta.innerHTML = ""
+        response.forEach(element => {
+            let newRow = tabla_consulta.insertRow(tabla_consulta.rows.length);
+            if (element.key) {
+                let row = `
                     <tr class="bg-danger">
                         <td>${element.abapMsgV1}</td>
                         <td>${element.key ? element.key : element.message}</td>
                     </tr>
                     `
-                        newRow.classList.add("bg-danger", "text-white")
-                        errors++
-                        return newRow.innerHTML = row;
-                    } else {
-                        let row = `
+                newRow.classList.add("bg-danger", "text-white")
+                errors++
+                return newRow.innerHTML = row;
+            } else {
+                let row = `
                     <tr >
                         <td>${(element.I_LENUM).replace(/^0+/gm, "")}</td>
                         <td>${element.E_TANUM}</td>
                     </tr>
                     `
 
-                        return newRow.innerHTML = row;
-                    }
-
-
-                })
-                cantidadErrores.innerHTML = errors
-
-                setTimeout(function () {
-                    $('#modalCountDown').modal('hide')
-                    $('#modalError').modal({ backdrop: 'static', keyboard: false })
-                }, 500);
+                return newRow.innerHTML = row;
             }
 
-        })
-        .catch(err => {
 
-            setTimeout(function () {
-                cantidadErrores.innerHTML = err
-                $('#modalCountDown').modal('hide')
-                $('#modalError').modal({ backdrop: 'static', keyboard: false })
-            }, 500);
         })
+        cantidadErrores.innerHTML = errors
+
+        setTimeout(function () {
+            $('#modalCountDown').modal('hide')
+            $('#modalError').modal({ backdrop: 'static', keyboard: false })
+        }, 500);
+
+    })
+    .catch(err => {
+
+        setTimeout(function () {
+            cantidadErrores.innerHTML = err
+            $('#modalCountDown').modal('hide')
+            $('#modalError').modal({ backdrop: 'static', keyboard: false })
+        }, 500);
+    })
+
 }
 
